@@ -1,8 +1,8 @@
 'use client'
 
-import { useUser } from '@auth0/nextjs-auth0/client'
+import { useUser, withPageAuthRequired } from '@auth0/nextjs-auth0/client'
 
-export default function ProfileClient() {
+export default withPageAuthRequired(function ProfileClient() {
   const { user, error, isLoading } = useUser()
 
   if (isLoading) return <div>Loading...</div>
@@ -17,4 +17,4 @@ export default function ProfileClient() {
       </div>
     )
   )
-}
+})
