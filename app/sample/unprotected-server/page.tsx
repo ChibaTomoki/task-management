@@ -14,7 +14,7 @@ export default async function UnprotectedClient() {
 
 const fetchUnprotectedAPI = async () => {
   const res = await axios.get<{ message: string }>(
-    'http://localhost:3000/api/sample/unprotected',
+    `${process.env.BASE_URL}/api/sample/unprotected`,
   )
   console.dir(res)
   return res
