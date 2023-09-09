@@ -1,12 +1,7 @@
-'use client'
-
 import { UserProvider } from '@auth0/nextjs-auth0/client'
-import CssBaseline from '@mui/material/CssBaseline'
-import { createTheme, ThemeProvider } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { ReactNode, useMemo } from 'react'
+import { ReactNode } from 'react'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -17,25 +12,10 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
-
-  const theme = useMemo(
-    () =>
-      createTheme({
-        palette: {
-          mode: prefersDarkMode ? 'dark' : 'light',
-        },
-      }),
-    [prefersDarkMode],
-  )
-
   return (
     <html lang="en">
       <UserProvider>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <body className={inter.className}>{children}</body>
-        </ThemeProvider>
+        <body className={inter.className}>{children}</body>
       </UserProvider>
     </html>
   )

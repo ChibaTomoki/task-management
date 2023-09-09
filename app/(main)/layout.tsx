@@ -1,10 +1,13 @@
 'use client'
 
 import MuiBox from '@mui/material/Box'
+import CssBaseline from '@mui/material/CssBaseline'
 import MuiTab from '@mui/material/Tab'
 import MuiTabs from '@mui/material/Tabs'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { usePathname, useRouter } from 'next/navigation'
-import { MouseEvent, ReactNode, SyntheticEvent } from 'react'
+import { MouseEvent, ReactNode, SyntheticEvent, useMemo } from 'react'
 
 function samePageLinkNavigation(
   event: MouseEvent<HTMLAnchorElement, MouseEvent>,
@@ -43,6 +46,18 @@ function LinkTab(props: LinkTabProps) {
 }
 
 export default function MainLayout({ children }: { children: ReactNode }) {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
+
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode: prefersDarkMode ? 'dark' : 'light',
+        },
+      }),
+    [prefersDarkMode],
+  )
+
   const router = useRouter()
   const pathname = usePathname()
 
@@ -65,17 +80,20 @@ export default function MainLayout({ children }: { children: ReactNode }) {
 
   return (
     <div>
-      <MuiBox sx={{ width: '100%' }}>
-        <MuiTabs
-          value={value}
-          onChange={handleChange}
-          aria-label="nav tabs example"
-        >
-          <LinkTab label="Board" href="/board" />
-          <LinkTab label="Table" href="/table" />
-          <LinkTab label="Other" href="/" />
-        </MuiTabs>
-      </MuiBox>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <MuiBox sx={{ width: '100%' }}>
+          <MuiTabs
+            value={value}
+            onChange={handleChange}
+            aria-label="nav tabs example"
+          >
+            <LinkTab label="Board" href="/board" />
+            <LinkTab label="Table" href="/table" />
+            <LinkTab label="Other" href="/" />
+          </MuiTabs>
+        </MuiBox>
+      </ThemeProvider>
       {children}
     </div>
   )
