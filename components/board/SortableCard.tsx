@@ -1,5 +1,6 @@
 'use client'
 
+import TaskEditDialog from '@/components/dialog/TaskFormDialog'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import {
@@ -8,6 +9,7 @@ import {
   CardContent as MuiCardContent,
   Typography as MuiTypography,
 } from '@mui/material'
+import { useState } from 'react'
 import { z } from 'zod'
 
 export const sortableCardSchema = z.object({
@@ -19,6 +21,7 @@ type Props = z.infer<typeof sortableCardSchema>
 export default function SortableCard({ id, title: name }: Props) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
+  const [showsTaskEditDialog, setShowsTaskEditDialog] = useState(false)
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -34,7 +37,7 @@ export default function SortableCard({ id, title: name }: Props) {
         }}
         elevation={3}
       >
-        <MuiCardActionArea>
+        <MuiCardActionArea onClick={() => setShowsTaskEditDialog(true)}>
           <MuiCardContent>
             <MuiTypography
               sx={{
@@ -48,6 +51,13 @@ export default function SortableCard({ id, title: name }: Props) {
           </MuiCardContent>
         </MuiCardActionArea>
       </MuiCard>
+      <TaskEditDialog
+        isOpen={showsTaskEditDialog}
+        cancelOnClick={() => setShowsTaskEditDialog(false)}
+        closeOnClick={() => setShowsTaskEditDialog(false)}
+        submitOnClick={() => setShowsTaskEditDialog(false)}
+        dialogTitle="タスク追加/編集"
+      />
     </div>
   )
 }
