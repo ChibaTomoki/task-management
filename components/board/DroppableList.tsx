@@ -24,10 +24,11 @@ export default function DroppableList({ id, title, cards }: Props) {
         <MuiPaper
           sx={{
             padding: '8px',
-            width: '160px',
+            width: '360px',
             display: 'flex',
             flexDirection: 'column',
             gap: '8px',
+            alignItems: 'center',
           }}
         >
           <MuiTypography component="p">{title}</MuiTypography>

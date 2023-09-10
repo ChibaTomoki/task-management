@@ -29,13 +29,20 @@ export default function SortableCard({ id, title: name }: Props) {
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
       <MuiCard
         sx={{
-          maxWidth: 345,
+          width: 320,
+          whiteSpace: 'nowrap',
         }}
         elevation={3}
       >
         <MuiCardActionArea>
           <MuiCardContent>
-            <MuiTypography gutterBottom component="div">
+            <MuiTypography
+              sx={{
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+              }}
+              component="div"
+            >
               {name}
             </MuiTypography>
           </MuiCardContent>

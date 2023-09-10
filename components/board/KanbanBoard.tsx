@@ -126,7 +126,7 @@ export default function KanbanBoard({ lists, setLists }: Props) {
       onDragEnd={handleDragEnd}
       onDragOver={handleDragOver}
     >
-      <MuiBox sx={{ display: 'flex', gap: '16px' }}>
+      <MuiBox sx={{ display: 'flex', gap: '24px' }}>
         {lists.map((list) => (
           <DroppableList
             key={list.id}
