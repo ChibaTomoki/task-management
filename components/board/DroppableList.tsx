@@ -8,23 +8,19 @@ import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable'
 import { Paper as MuiPaper, Typography as MuiTypography } from '@mui/material'
 import { z } from 'zod'
 
-const droppableListSchema = z.object({
+export const droppableListSchema = z.object({
   id: z.string(),
   title: z.string(),
+  cards: z.array(sortableCardSchema),
 })
-const droppableListPropsSchema = droppableListSchema.and(
-  z.object({
-    cards: z.array(sortableCardSchema),
-  }),
-)
-type Props = z.infer<typeof droppableListPropsSchema>
+type Props = z.infer<typeof droppableListSchema>
 
 export default function DroppableList({ id, title, cards }: Props) {
   const { setNodeRef } = useDroppable({ id })
 
   return (
     <SortableContext id={id} items={cards} strategy={rectSortingStrategy}>
-      <div ref={setNodeRef}>
+      <div ref={cards.length ? undefined : setNodeRef}>
         <MuiPaper
           sx={{
             padding: '8px',

@@ -11,5 +11,10 @@
     "project": "./tsconfig.json"
   },
   "plugins": ["@typescript-eslint"],
-  "ignorePatterns": ["**/*.js", "**/*.jsx"]
+  "ignorePatterns": ["**/*.js", "**/*.jsx"],
+  "rules": {
+    "arrow-body-style": ["error", "as-needed"],
+    "curly": ["error", "multi"],
+    "no-else-return": ["error", { "allowElseIf": false }]
+  }
 }

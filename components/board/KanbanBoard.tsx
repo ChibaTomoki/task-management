@@ -1,6 +1,8 @@
 'use client'
 
-import DroppableList from '@/components/board/DroppableList'
+import DroppableList, {
+  droppableListSchema,
+} from '@/components/board/DroppableList'
 import {
   DndContext,
   DragEndEvent,
@@ -13,38 +15,22 @@ import {
 } from '@dnd-kit/core'
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { Box as MuiBox } from '@mui/material'
-import { ComponentProps, useState } from 'react'
+import { z } from 'zod'
 
-export default function KanbanBoard() {
-  const [lists, setLists] = useState<ComponentProps<typeof DroppableList>[]>([
-    {
-      id: 'list0',
-      title: 'TODO',
-      cards: [
-        { id: 'card0', title: 'タスク0' },
-        { id: 'card1', title: 'タスク1' },
-        { id: 'card2', title: 'タスク2' },
-      ],
-    },
-    {
-      id: 'list1',
-      title: '作業中',
-      cards: [
-        { id: 'card3', title: 'タスク3' },
-        { id: 'card4', title: 'タスク4' },
-        { id: 'card5', title: 'タスク5' },
-      ],
-    },
-    {
-      id: 'list2',
-      title: 'プルリク確認中',
-      cards: [
-        { id: 'card6', title: 'タスク6' },
-        { id: 'card7', title: 'タスク7' },
-        { id: 'card8', title: 'タスク8' },
-      ],
-    },
-  ])
+const boardSchema = z.object({
+  lists: z.array(droppableListSchema),
+  setLists: z
+    .function()
+    .args(
+      z
+        .function()
+        .args(z.array(droppableListSchema))
+        .returns(z.array(droppableListSchema)),
+    ),
+})
+type Props = z.infer<typeof boardSchema>
+
+export default function KanbanBoard({ lists, setLists }: Props) {
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -52,30 +38,85 @@ export default function KanbanBoard() {
     }),
   )
 
+  /**
+   *
+   * @param targetId listId(空のリストにdropしたとき) or cardId
+   * @returns list or undefined(見つけられなかった場合)
+   */
+  const findList = (targetId: string) => {
+    if (!targetId) return undefined
+
+    const foundList = lists.find((list) => list.id === targetId)
+    if (foundList) return foundList
+
+    const cardWithListId = lists.flatMap((list) =>
+      list.cards.map((card) => ({ cardId: card.id, listId: list.id })),
+    )
+    const listId = cardWithListId.find((x) => x.cardId === targetId)?.listId
+    return lists.find((list) => list.id === listId)
+  }
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
+    if (typeof active.id !== 'string')
+      throw new Error('Cardのidはstringにしてください')
     if (!over) throw new Error('overがnullです')
+    if (typeof over.id !== 'string')
+      throw new Error('Cardのidはstringにしてください')
 
-    if (active.id !== over.id) {
-      setLists((lists) => {
-        lists.forEach((list) => {
-          let activeCardIndex: number | undefined = undefined
-          let overCardIndex: number | undefined = undefined
-          list.cards.forEach((card, i) => {
-            if (card.id === active.id) activeCardIndex = i
-            if (card.id === over.id) overCardIndex = i
-          })
-          if (activeCardIndex !== undefined && overCardIndex !== undefined) {
-            list.cards = arrayMove(list.cards, activeCardIndex, overCardIndex)
+    const activeList = findList(active.id)
+    const overList = findList(over.id)
+    if (!activeList || !overList || activeList !== overList) return
+
+    const activeIndex = activeList.cards.findIndex((x) => x.id === active.id)
+    const overIndex = overList.cards.findIndex((x) => x.id === over.id)
+    if (activeIndex !== overIndex)
+      setLists((prevLists) =>
+        prevLists.map((x) => {
+          if (x.id === activeList.id) {
+            x.cards = arrayMove(overList.cards, activeIndex, overIndex)
+            return x
           }
-        })
-        return [...lists]
-      })
-    }
+          return x
+        }),
+      )
   }
   const handleDragOver = (event: DragOverEvent) => {
-    // TODO: リストをまたいでカードを移動するときの処理
-    console.dir(event)
+    const { active, over, delta } = event
+    if (typeof active.id !== 'string')
+      throw new Error('Cardのidはstringにしてください')
+    if (!over) throw new Error('overがnullです')
+    if (typeof over.id !== 'string')
+      throw new Error('Cardのidはstringにしてください')
+
+    const activeList = findList(active.id)
+    const overList = findList(over.id)
+    if (!activeList || !overList || activeList === overList) return
+
+    setLists((prevLists) => {
+      const activeListCards = activeList.cards
+      const overListCards = overList.cards
+      const activeIndex = activeListCards.findIndex((x) => x.id === active.id)
+      const overIndex = overListCards.findIndex((x) => x.id === over.id)
+      const newIndex = () => {
+        const putOnBelowLastItem =
+          overIndex === overListCards.length - 1 && delta.y > 0
+        const modifier = putOnBelowLastItem ? 1 : 0
+        return overIndex >= 0 ? overIndex + modifier : overListCards.length + 1
+      }
+      return prevLists.map((prevList) => {
+        if (prevList.id === activeList.id) {
+          prevList.cards = activeListCards.filter((x) => x.id !== active.id)
+          return prevList
+        }
+        if (prevList.id === overList.id)
+          prevList.cards = [
+            ...overListCards.slice(0, newIndex()),
+            activeListCards[activeIndex],
+            ...overListCards.slice(newIndex(), overListCards.length),
+          ]
+        return prevList
+      })
+    })
   }
 
   return (
