@@ -1,3 +1,10 @@
+import KanbanBoard from '@/components/board/KanbanBoard'
+
 export default function Board() {
-  return <p>ボード形式のタスクリスト</p>
+  return (
+    <main>
+      <p>ボード形式のタスクリスト</p>
+      <KanbanBoard />
+    </main>
+  )
 }
