@@ -1,4 +1,6 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
+  InputAdornment as MuiInputAdornment,
   MenuItem as MuiMenuItem,
   Select as MuiSelect,
   TextField as MuiTextField,
@@ -13,9 +15,12 @@ const statusSchema = z.enum([
   'done',
   'nextTodo',
 ])
+const assignedPersonSchema = z.enum(['person1', 'person2', 'person3', 'none'])
 const formInputsSchema = z.object({
-  title: z.string().nonempty(),
+  title: z.string().min(1),
   status: statusSchema,
+  assignedPerson: assignedPersonSchema.optional(),
+  estimatedTime: z.coerce.number().nonnegative(),
 })
 type FormInputs = z.infer<typeof formInputsSchema>
 
@@ -29,10 +34,19 @@ const taskFormSchema = z.object({
 type Props = z.infer<typeof taskFormSchema>
 
 export default function TaskForm({ submit }: Props) {
-  const { handleSubmit, control } = useForm<FormInputs>({
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<FormInputs>({
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
+    resolver: zodResolver(formInputsSchema),
     defaultValues: {
       title: '',
       status: 'todo',
+      assignedPerson: 'none',
+      estimatedTime: 0,
     },
   })
   const onSubmit: SubmitHandler<FormInputs> = (data) => {
@@ -44,15 +58,19 @@ export default function TaskForm({ submit }: Props) {
       <Controller
         name="title"
         control={control}
-        rules={{ required: true }}
         render={({ field }) => (
-          <MuiTextField {...field} label="タスク名" fullWidth />
+          <MuiTextField
+            {...field}
+            label="タスク名"
+            fullWidth
+            error={!!errors.title}
+            helperText={errors.title?.message}
+          />
         )}
       />
       <Controller
         name="status"
         control={control}
-        rules={{ required: true }}
         render={({ field }) => (
           <MuiSelect {...field} label="ステータス" fullWidth>
             <MuiMenuItem value="todo">TODO</MuiMenuItem>
@@ -61,6 +79,36 @@ export default function TaskForm({ submit }: Props) {
             <MuiMenuItem value="done">完了</MuiMenuItem>
             <MuiMenuItem value="nextTodo">次のTODO</MuiMenuItem>
           </MuiSelect>
+        )}
+      />
+      <Controller
+        name="assignedPerson"
+        control={control}
+        render={({ field }) => (
+          <MuiSelect {...field} label="担当者" fullWidth>
+            <MuiMenuItem value="none">未定</MuiMenuItem>
+            <MuiMenuItem value="person1">(担当者名1)</MuiMenuItem>
+            <MuiMenuItem value="person2">(担当者名2)</MuiMenuItem>
+            <MuiMenuItem value="person3">(担当者名3)</MuiMenuItem>
+          </MuiSelect>
+        )}
+      />
+      <Controller
+        name="estimatedTime"
+        control={control}
+        render={({ field }) => (
+          <MuiTextField
+            {...field}
+            label="予想時間"
+            fullWidth
+            InputProps={{
+              endAdornment: (
+                <MuiInputAdornment position="end">時間</MuiInputAdornment>
+              ),
+            }}
+            error={!!errors.estimatedTime}
+            helperText={errors.estimatedTime?.message}
+          />
         )}
       />
     </form>
