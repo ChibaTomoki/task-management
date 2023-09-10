@@ -28,30 +28,28 @@ export default function TaskEditDialog({
   const formId = useId()
 
   return (
-    <div>
-      <MuiDialog open={isOpen} onClose={closeOnClick}>
-        <MuiDialogTitle>{title}</MuiDialogTitle>
-        <MuiDialogContent
-          sx={{ display: 'flex', flexDirection: 'column', gap: '8px' }}
-        >
-          <TaskForm
-            submit={{
-              title: '追加/確定',
-              onclick: (inputValues) => {
-                console.dir(inputValues)
-                submitOnClick()
-              },
-              formId,
-            }}
-          />
-        </MuiDialogContent>
-        <MuiDialogActions>
-          <MuiButton onClick={cancelOnClick}>キャンセル</MuiButton>
-          <MuiButton type="submit" form={formId}>
-            追加/確定
-          </MuiButton>
-        </MuiDialogActions>
-      </MuiDialog>
-    </div>
+    <MuiDialog open={isOpen} onClose={closeOnClick}>
+      <MuiDialogTitle>{title}</MuiDialogTitle>
+      <MuiDialogContent
+        sx={{ display: 'flex', flexDirection: 'column', gap: '8px' }}
+      >
+        <TaskForm
+          submit={{
+            title: '追加/確定',
+            onclick: (inputValues) => {
+              console.dir(inputValues)
+              submitOnClick()
+            },
+            formId,
+          }}
+        />
+      </MuiDialogContent>
+      <MuiDialogActions>
+        <MuiButton onClick={cancelOnClick}>キャンセル</MuiButton>
+        <MuiButton type="submit" form={formId}>
+          追加/確定
+        </MuiButton>
+      </MuiDialogActions>
+    </MuiDialog>
   )
 }
