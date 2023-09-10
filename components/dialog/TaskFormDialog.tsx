@@ -4,28 +4,17 @@ import {
   DialogActions as MuiDialogActions,
   DialogContent as MuiDialogContent,
   DialogTitle as MuiDialogTitle,
-  MenuItem as MuiMenuItem,
-  Select as MuiSelect,
-  TextField as MuiTextField,
 } from '@mui/material'
-import { useState } from 'react'
+import { useId } from 'react'
 import { z } from 'zod'
-
-const statusSchema = z.enum([
-  'todo',
-  'inProgress',
-  'waiting',
-  'done',
-  'nextTodo',
-])
-type Status = z.infer<typeof statusSchema>
+import TaskForm from '../form/TaskForm'
 
 const taskEditDialogSchema = z.object({
   isOpen: z.boolean(),
   closeOnClick: z.function(),
   cancelOnClick: z.function(),
   submitOnClick: z.function(),
-  dialogTitle: z.string(),
+  title: z.string(),
 })
 type Props = z.infer<typeof taskEditDialogSchema>
 
@@ -34,50 +23,33 @@ export default function TaskEditDialog({
   closeOnClick,
   cancelOnClick,
   submitOnClick,
-  dialogTitle,
+  title: title,
 }: Props) {
-  const [title, setTitle] = useState('')
-  const [status, setStatus] = useState<Status>('todo')
+  const formId = useId()
 
   return (
     <div>
       <MuiDialog open={isOpen} onClose={closeOnClick}>
-        <MuiDialogTitle>{dialogTitle}</MuiDialogTitle>
+        <MuiDialogTitle>{title}</MuiDialogTitle>
         <MuiDialogContent
           sx={{ display: 'flex', flexDirection: 'column', gap: '8px' }}
         >
-          <MuiTextField
-            autoFocus
-            margin="dense"
-            id="title"
-            label="タイトル"
-            fullWidth
-            variant="standard"
-            value={title}
-            onChange={(e) => {
-              setTitle(e.target.value)
+          <TaskForm
+            submit={{
+              title: '追加/確定',
+              onclick: (inputValues) => {
+                console.dir(inputValues)
+                submitOnClick()
+              },
+              formId,
             }}
           />
-          <MuiSelect
-            labelId="status"
-            id="status"
-            value={status}
-            label="ステータス"
-            fullWidth
-            onChange={(e) => {
-              setStatus(statusSchema.parse(e.target.value))
-            }}
-          >
-            <MuiMenuItem value="todo">TODO</MuiMenuItem>
-            <MuiMenuItem value="inProgress">作業中</MuiMenuItem>
-            <MuiMenuItem value="waiting">プルリク確認中</MuiMenuItem>
-            <MuiMenuItem value="done">完了</MuiMenuItem>
-            <MuiMenuItem value="nextTodo">次のTODO</MuiMenuItem>
-          </MuiSelect>
         </MuiDialogContent>
         <MuiDialogActions>
           <MuiButton onClick={cancelOnClick}>キャンセル</MuiButton>
-          <MuiButton onClick={submitOnClick}>追加/確定</MuiButton>
+          <MuiButton type="submit" form={formId}>
+            追加/確定
+          </MuiButton>
         </MuiDialogActions>
       </MuiDialog>
     </div>

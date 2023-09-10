@@ -56,7 +56,7 @@ export default function SortableCard({ id, title: name }: Props) {
         cancelOnClick={() => setShowsTaskEditDialog(false)}
         closeOnClick={() => setShowsTaskEditDialog(false)}
         submitOnClick={() => setShowsTaskEditDialog(false)}
-        dialogTitle="タスク追加/編集"
+        title="タスク追加/編集"
       />
     </div>
   )
