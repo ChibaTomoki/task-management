@@ -16,11 +16,16 @@ const statusSchema = z.enum([
   'nextTodo',
 ])
 const assignedPersonSchema = z.enum(['person1', 'person2', 'person3', 'none'])
+const tagSchema = z.enum(['FE', 'BE', 'none'])
+
 const formInputsSchema = z.object({
   title: z.string().min(1),
   status: statusSchema,
   assignedPerson: assignedPersonSchema.optional(),
-  estimatedTime: z.coerce.number().nonnegative(),
+  estimatedWorkingTime: z.coerce.number().nonnegative(),
+  actualWorkingTime: z.coerce.number().nonnegative(),
+  tag: tagSchema,
+  note: z.string(),
 })
 type FormInputs = z.infer<typeof formInputsSchema>
 
@@ -46,7 +51,10 @@ export default function TaskForm({ submit }: Props) {
       title: '',
       status: 'todo',
       assignedPerson: 'none',
-      estimatedTime: 0,
+      estimatedWorkingTime: 0,
+      actualWorkingTime: 0,
+      tag: 'none',
+      note: '',
     },
   })
   const onSubmit: SubmitHandler<FormInputs> = (data) => {
@@ -94,7 +102,7 @@ export default function TaskForm({ submit }: Props) {
         )}
       />
       <Controller
-        name="estimatedTime"
+        name="estimatedWorkingTime"
         control={control}
         render={({ field }) => (
           <MuiTextField
@@ -106,9 +114,45 @@ export default function TaskForm({ submit }: Props) {
                 <MuiInputAdornment position="end">時間</MuiInputAdornment>
               ),
             }}
-            error={!!errors.estimatedTime}
-            helperText={errors.estimatedTime?.message}
+            error={!!errors.estimatedWorkingTime}
+            helperText={errors.estimatedWorkingTime?.message}
           />
+        )}
+      />
+      <Controller
+        name="actualWorkingTime"
+        control={control}
+        render={({ field }) => (
+          <MuiTextField
+            {...field}
+            label="実作業時間"
+            fullWidth
+            InputProps={{
+              endAdornment: (
+                <MuiInputAdornment position="end">時間</MuiInputAdornment>
+              ),
+            }}
+            error={!!errors.actualWorkingTime}
+            helperText={errors.actualWorkingTime?.message}
+          />
+        )}
+      />
+      <Controller
+        name="tag"
+        control={control}
+        render={({ field }) => (
+          <MuiSelect {...field} label="タグ" fullWidth>
+            <MuiMenuItem value="none">無し</MuiMenuItem>
+            <MuiMenuItem value="FE">FE</MuiMenuItem>
+            <MuiMenuItem value="BE">BE</MuiMenuItem>
+          </MuiSelect>
+        )}
+      />
+      <Controller
+        name="note"
+        control={control}
+        render={({ field }) => (
+          <MuiTextField {...field} label="備考" fullWidth multiline rows={6} />
         )}
       />
     </form>
