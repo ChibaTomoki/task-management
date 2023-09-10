@@ -15,6 +15,7 @@ import {
 } from '@dnd-kit/core'
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { Box as MuiBox } from '@mui/material'
+import { useId } from 'react'
 import { z } from 'zod'
 
 const boardSchema = z.object({
@@ -31,6 +32,8 @@ const boardSchema = z.object({
 type Props = z.infer<typeof boardSchema>
 
 export default function KanbanBoard({ lists, setLists }: Props) {
+  const componentId = useId()
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -59,7 +62,7 @@ export default function KanbanBoard({ lists, setLists }: Props) {
     const { active, over } = event
     if (typeof active.id !== 'string')
       throw new Error('Cardのidはstringにしてください')
-    if (!over) throw new Error('overがnullです')
+    if (!over) return
     if (typeof over.id !== 'string')
       throw new Error('Cardのidはstringにしてください')
 
@@ -84,7 +87,7 @@ export default function KanbanBoard({ lists, setLists }: Props) {
     const { active, over, delta } = event
     if (typeof active.id !== 'string')
       throw new Error('Cardのidはstringにしてください')
-    if (!over) throw new Error('overがnullです')
+    if (!over) return
     if (typeof over.id !== 'string')
       throw new Error('Cardのidはstringにしてください')
 
@@ -121,6 +124,7 @@ export default function KanbanBoard({ lists, setLists }: Props) {
 
   return (
     <DndContext
+      id={componentId}
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
