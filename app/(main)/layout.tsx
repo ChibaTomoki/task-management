@@ -6,6 +6,8 @@ import Tab from '@mui/material/Tab'
 import { default as Tabs } from '@mui/material/Tabs'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { usePathname, useRouter } from 'next/navigation'
 import { ReactNode, SyntheticEvent, useMemo } from 'react'
 
@@ -33,19 +35,21 @@ export default function MainLayout({ children }: { children: ReactNode }) {
 
   return (
     <div>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <MuiBox sx={{ width: '100%' }}>
-          <MuiBox sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs value={pathname} onChange={handleChange} aria-label="tabs">
-              <Tab label="Board" value="/board" />
-              <Tab label="Table" value="/table" />
-              <Tab label="Other" value="/" />
-            </Tabs>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <MuiBox sx={{ width: '100%' }}>
+            <MuiBox sx={{ borderBottom: 1, borderColor: 'divider' }}>
+              <Tabs value={pathname} onChange={handleChange} aria-label="tabs">
+                <Tab label="Board" value="/board" />
+                <Tab label="Table" value="/table" />
+                <Tab label="Other" value="/" />
+              </Tabs>
+            </MuiBox>
           </MuiBox>
-        </MuiBox>
-        {children}
-      </ThemeProvider>
+          {children}
+        </ThemeProvider>
+      </LocalizationProvider>
     </div>
   )
 }

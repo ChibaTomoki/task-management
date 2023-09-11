@@ -8,6 +8,8 @@ import {
   Select as MuiSelect,
   TextField as MuiTextField,
 } from '@mui/material'
+import { DatePicker as MuiDatePicker } from '@mui/x-date-pickers/DatePicker'
+import dayjs from 'dayjs'
 import { useId } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -30,6 +32,8 @@ const formInputsSchema = z.object({
   tag: tagSchema,
   estimatedWorkingTime: z.coerce.number().nonnegative(),
   actualWorkingTime: z.coerce.number().nonnegative(),
+  startDate: z.coerce.date().nullable(),
+  endDate: z.coerce.date().nullable(),
   note: z.string(),
 })
 type FormInputs = z.infer<typeof formInputsSchema>
@@ -60,6 +64,8 @@ export default function TaskForm({ submit }: Props) {
       tag: 'none',
       estimatedWorkingTime: 0,
       actualWorkingTime: 0,
+      startDate: null,
+      endDate: null,
       note: '',
     },
   })
@@ -190,11 +196,35 @@ export default function TaskForm({ submit }: Props) {
           )}
         />
       </MuiBox>
+      <MuiBox sx={{ display: 'flex', gap: '16px' }}>
+        <Controller
+          name="startDate"
+          control={control}
+          render={({ field }) => (
+            <MuiDatePicker
+              {...field}
+              label="開始日"
+              value={field.value && dayjs(field.value)}
+            />
+          )}
+        />
+        <Controller
+          name="endDate"
+          control={control}
+          render={({ field }) => (
+            <MuiDatePicker
+              {...field}
+              label="完了日"
+              value={field.value && dayjs(field.value)}
+            />
+          )}
+        />
+      </MuiBox>
       <Controller
         name="note"
         control={control}
         render={({ field }) => (
-          <MuiTextField {...field} label="備考" fullWidth multiline rows={6} />
+          <MuiTextField {...field} label="備考" fullWidth multiline rows={5} />
         )}
       />
     </form>
