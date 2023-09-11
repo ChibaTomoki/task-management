@@ -2,7 +2,10 @@
 
 import DroppableList from '@/components/board/DroppableList'
 import KanbanBoard from '@/components/board/KanbanBoard'
-import { Box as MuiBox } from '@mui/material'
+import AddTaskFormDialog from '@/components/dialog/AddTaskFormDialog'
+import MuiAddCircle from '@mui/icons-material/Add'
+import MuiTimelineIcon from '@mui/icons-material/Timeline'
+import { Box as MuiBox, Fab as MuiFab } from '@mui/material'
 import { ComponentProps, useState } from 'react'
 
 export default function Board() {
@@ -53,11 +56,31 @@ export default function Board() {
       cards: [],
     },
   ])
+  const [showsAddTaskFormDialog, setShowsAddTaskFormDialog] = useState(false)
 
   return (
     <main>
       <MuiBox sx={{ padding: '16px' }}>
         <KanbanBoard lists={lists} setLists={setLists} />
+        <MuiFab
+          sx={{ position: 'fixed', right: '160px', bottom: '64px' }}
+          color="primary"
+          onClick={() => setShowsAddTaskFormDialog(true)}
+        >
+          <MuiAddCircle fontSize="large" />
+        </MuiFab>
+        <MuiFab
+          sx={{ position: 'fixed', right: '64px', bottom: '64px' }}
+          color="secondary"
+        >
+          <MuiTimelineIcon fontSize="large" />
+        </MuiFab>
+        <AddTaskFormDialog
+          isOpen={showsAddTaskFormDialog}
+          closeOnClick={() => setShowsAddTaskFormDialog(false)}
+          cancelOnClick={() => setShowsAddTaskFormDialog(false)}
+          submitOnClick={() => setShowsAddTaskFormDialog(false)}
+        />
       </MuiBox>
     </main>
   )

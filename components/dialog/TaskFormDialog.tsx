@@ -9,21 +9,24 @@ import { useId } from 'react'
 import { z } from 'zod'
 import TaskForm from '../form/TaskForm'
 
-const taskEditDialogSchema = z.object({
+export const taskFormDialogSchema = z.object({
   isOpen: z.boolean(),
-  closeOnClick: z.function(),
-  cancelOnClick: z.function(),
-  submitOnClick: z.function(),
+  closeOnClick: z.function().returns(z.void()),
+  cancelOnClick: z.function().returns(z.void()),
+  submit: z.object({
+    title: z.string(),
+    onClick: z.function().returns(z.void()),
+  }),
   title: z.string(),
 })
-type Props = z.infer<typeof taskEditDialogSchema>
+type Props = z.infer<typeof taskFormDialogSchema>
 
 export default function TaskEditDialog({
   isOpen,
   closeOnClick,
   cancelOnClick,
-  submitOnClick,
-  title: title,
+  submit,
+  title,
 }: Props) {
   const formId = useId()
 
@@ -38,7 +41,7 @@ export default function TaskEditDialog({
             title: '追加/確定',
             onclick: (inputValues) => {
               console.dir(inputValues)
-              submitOnClick()
+              submit.onClick()
             },
             formId,
           }}
@@ -47,7 +50,7 @@ export default function TaskEditDialog({
       <MuiDialogActions>
         <MuiButton onClick={cancelOnClick}>キャンセル</MuiButton>
         <MuiButton type="submit" form={formId}>
-          追加/確定
+          {submit.title}
         </MuiButton>
       </MuiDialogActions>
     </MuiDialog>

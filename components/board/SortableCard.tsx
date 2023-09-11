@@ -1,6 +1,6 @@
 'use client'
 
-import TaskEditDialog from '@/components/dialog/TaskFormDialog'
+import EditTaskEditDialog from '@/components/dialog/EditTaskFormDialog'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import {
@@ -51,12 +51,11 @@ export default function SortableCard({ id, title: name }: Props) {
           </MuiCardContent>
         </MuiCardActionArea>
       </MuiCard>
-      <TaskEditDialog
+      <EditTaskEditDialog
         isOpen={showsTaskEditDialog}
         cancelOnClick={() => setShowsTaskEditDialog(false)}
         closeOnClick={() => setShowsTaskEditDialog(false)}
         submitOnClick={() => setShowsTaskEditDialog(false)}
-        title="タスク追加/編集"
       />
     </div>
   )
