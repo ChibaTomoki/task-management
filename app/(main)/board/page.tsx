@@ -6,9 +6,12 @@ import AddTaskFormDialog from '@/components/dialog/AddTaskFormDialog'
 import MuiAddCircle from '@mui/icons-material/Add'
 import MuiTimelineIcon from '@mui/icons-material/Timeline'
 import { Box as MuiBox, Fab as MuiFab } from '@mui/material'
+import { useRouter } from 'next/navigation'
 import { ComponentProps, useState } from 'react'
 
 export default function Board() {
+  const router = useRouter()
+
   const [lists, setLists] = useState<ComponentProps<typeof DroppableList>[]>([
     {
       id: 'list0',
@@ -72,6 +75,7 @@ export default function Board() {
         <MuiFab
           sx={{ position: 'fixed', right: '64px', bottom: '64px' }}
           color="secondary"
+          onClick={() => router.push('/dependency')}
         >
           <MuiTimelineIcon fontSize="large" />
         </MuiFab>
